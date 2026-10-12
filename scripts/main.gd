@@ -84,20 +84,22 @@ func _on_column_pressed(column):
 	if not game_running or game_over:
 		return
 	
-	# Find the bottom-most tile (highest Y value, closest to player)
-	var bottom_tile = null
-	var highest_y = -INF
+	# Find the top-most tile (lowest Y value, furthest from player)
+	var top_tile = null
+	var lowest_y = INF
 	
 	for tile in tiles:
-		if tile.position.y > highest_y:
-			highest_y = tile.position.y
-			bottom_tile = tile
+		if tile.position.y < lowest_y:
+			lowest_y = tile.position.y
+			top_tile = tile
 	
-	# Check if the pressed column matches the bottom tile's column
-	if bottom_tile.column == column:
-		# Correct! Remove bottom tile, slide all tiles down, spawn new one at top
-		bottom_tile.queue_free()
-		tiles.erase(bottom_tile)
+	print("Pressed column: ", column, ", Top tile column: ", top_tile.column, ", Top tile position: ", top_tile.position)
+	
+	# Check if the pressed column matches the top tile's column
+	if top_tile.column == column:
+		# Correct! Remove top tile, slide all tiles down, spawn new one at top
+		top_tile.queue_free()
+		tiles.erase(top_tile)
 		
 		# Slide all remaining tiles down by one tile height
 		for tile in tiles:

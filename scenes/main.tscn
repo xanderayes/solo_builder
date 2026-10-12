@@ -53,39 +53,41 @@ text = "Click to Start"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="ColumnLabels" type="HBoxContainer" parent="."]
+[node name="LabelF" type="Label" parent="."]
 offset_left = 0.0
 offset_top = 60.0
-offset_right = 400.0
-offset_bottom = 100.0
-
-[node name="LabelF" type="Label" parent="ColumnLabels"]
-custom_minimum_size = Vector2(100, 0)
-layout_mode = 2
+offset_right = 100.0
+offset_bottom = 120.0
 theme_override_font_sizes/font_size = 48
 text = "F"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="LabelG" type="Label" parent="ColumnLabels"]
-custom_minimum_size = Vector2(100, 0)
-layout_mode = 2
+[node name="LabelG" type="Label" parent="."]
+offset_left = 100.0
+offset_top = 60.0
+offset_right = 200.0
+offset_bottom = 120.0
 theme_override_font_sizes/font_size = 48
 text = "G"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="LabelH" type="Label" parent="ColumnLabels"]
-custom_minimum_size = Vector2(100, 0)
-layout_mode = 2
+[node name="LabelH" type="Label" parent="."]
+offset_left = 200.0
+offset_top = 60.0
+offset_right = 300.0
+offset_bottom = 120.0
 theme_override_font_sizes/font_size = 48
 text = "H"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="LabelJ" type="Label" parent="ColumnLabels"]
-custom_minimum_size = Vector2(100, 0)
-layout_mode = 2
+[node name="LabelJ" type="Label" parent="."]
+offset_left = 300.0
+offset_top = 60.0
+offset_right = 400.0
+offset_bottom = 120.0
 theme_override_font_sizes/font_size = 48
 text = "J"
 horizontal_alignment = 1
