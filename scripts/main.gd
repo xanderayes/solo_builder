@@ -3,7 +3,7 @@ extends Node2D
 const COLUMN_COUNT = 4
 const TILE_WIDTH = 100
 const TILE_HEIGHT = 150
-const VISIBLE_TILES = 10
+const VISIBLE_TILES = 6
 
 @onready var game_area = $GameArea
 @onready var score_label = $ScoreLabel
@@ -62,6 +62,9 @@ func start_game():
 	# Spawn initial tiles
 	for i in range(VISIBLE_TILES):
 		spawn_tile(i)
+	
+	# Highlight the bottom tile
+	highlight_bottom_tile()
 
 func reset_game():
 	game_over = false
@@ -73,34 +76,34 @@ func spawn_tile(index = 0):
 	# Create tile programmatically
 	var tile = ColorRect.new()
 	tile.set_meta("column", column)
-	tile.position = Vector2(column * TILE_WIDTH, 100 + index * TILE_HEIGHT)
+	tile.position = Vector2(column * TILE_WIDTH, 150 + index * TILE_HEIGHT)
 	tile.size = Vector2(TILE_WIDTH, TILE_HEIGHT)
-	tile.color = Color(0, 0, 0, 1)
 	
-	# Create label
-	var label = Label.new()
-	label.name = "KeyLabel"
-	label.text = ""
+	# Use different colors for each column
 	match column:
 		0:
-			label.text = "F"
+			tile.color = Color(1, 0, 0, 1)  # Red for F
 		1:
-			label.text = "G"
+			tile.color = Color(0, 1, 0, 1)  # Green for G
 		2:
-			label.text = "H"
+			tile.color = Color(0, 0, 1, 1)  # Blue for H
 		3:
-			label.text = "J"
-	label.anchors_preset = Control.PRESET_CENTER
-	label.offset_left = -25
-	label.offset_top = -25
-	label.offset_right = 25
-	label.offset_bottom = 25
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+			tile.color = Color(1, 1, 0, 1)  # Yellow for J
 	
-	tile.add_child(label)
 	game_area.add_child(tile)
 	tiles.append(tile)
+
+func highlight_bottom_tile():
+	# Reset all tiles to normal
+	for tile in tiles:
+		tile.z_index = 0
+	
+	# Sort tiles by Y position
+	tiles.sort_custom(func(a, b): return a.position.y < b.position.y)
+	
+	# Highlight bottom tile with white border
+	var bottom_tile = tiles[tiles.size() - 1]
+	bottom_tile.z_index = 10
 
 func _on_column_pressed(column):
 	if not game_running or game_over:
@@ -112,12 +115,8 @@ func _on_column_pressed(column):
 	# Find the bottom-most tile (highest Y value, closest to player)
 	var bottom_tile = tiles[tiles.size() - 1]
 	
-	print("=== Pressed key: ", column, " ===")
-	print("Bottom tile: col=", bottom_tile.get_meta("column"), ", pos=", bottom_tile.position)
-	
 	# Check if the pressed column matches the bottom tile's column
 	if bottom_tile.get_meta("column") == column:
-		print("CORRECT!")
 		# Correct! Remove bottom tile, slide all tiles down, spawn new one at top
 		bottom_tile.queue_free()
 		tiles.pop_back()
@@ -134,37 +133,27 @@ func _on_column_pressed(column):
 		new_tile.set_meta("column", new_column)
 		new_tile.position = Vector2(new_column * TILE_WIDTH, tiles[0].position.y - TILE_HEIGHT)
 		new_tile.size = Vector2(TILE_WIDTH, TILE_HEIGHT)
-		new_tile.color = Color(0, 0, 0, 1)
 		
-		# Create label
-		var label = Label.new()
-		label.name = "KeyLabel"
-		label.text = ""
+		# Use different colors for each column
 		match new_column:
 			0:
-				label.text = "F"
+				new_tile.color = Color(1, 0, 0, 1)  # Red for F
 			1:
-				label.text = "G"
+				new_tile.color = Color(0, 1, 0, 1)  # Green for G
 			2:
-				label.text = "H"
+				new_tile.color = Color(0, 0, 1, 1)  # Blue for H
 			3:
-				label.text = "J"
-		label.anchors_preset = Control.PRESET_CENTER
-		label.offset_left = -25
-		label.offset_top = -25
-		label.offset_right = 25
-		label.offset_bottom = 25
-		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+				new_tile.color = Color(1, 1, 0, 1)  # Yellow for J
 		
-		new_tile.add_child(label)
 		game_area.add_child(new_tile)
 		tiles.push_front(new_tile)
+		
+		# Highlight the new bottom tile
+		highlight_bottom_tile()
 		
 		score += 1
 		score_label.text = "Score: " + str(score)
 	else:
-		print("WRONG! Game over.")
 		# Wrong column - game over
 		end_game()
 
