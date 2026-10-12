@@ -21,7 +21,7 @@ config/features=PackedStringArray("4.7")
 [display]
 
 window/size/viewport_width=400
-window/size/viewport_height=700
+window/size/viewport_height=1600
 window/size/resizable=false
 
 [rendering]

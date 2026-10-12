@@ -5,8 +5,7 @@ extends Node2D
 const COLUMN_COUNT = 4
 const TILE_WIDTH = 100
 const TILE_HEIGHT = 150
-const INITIAL_SPEED = 200.0
-const SPEED_INCREMENT = 10.0
+const VISIBLE_TILES = 10
 
 @onready var game_area = $GameArea
 @onready var score_label = $ScoreLabel
@@ -15,11 +14,8 @@ const SPEED_INCREMENT = 10.0
 
 var tiles = []  # Array of active tiles
 var score = 0
-var speed = INITIAL_SPEED
 var game_running = false
 var game_over = false
-var spawn_timer = 0.0
-var spawn_interval = 0.6
 
 func _ready():
 	randomize()
@@ -51,42 +47,11 @@ func _input(event):
 		if column >= 0:
 			_on_column_pressed(column)
 
-func _process(delta):
-	if not game_running or game_over:
-		return
-	
-	# Move tiles down
-	for tile in tiles:
-		tile.position.y += speed * delta
-	
-	# Remove tiles that have gone off screen
-	tiles = tiles.filter(func(t): return t.position.y < 700)
-	
-	# Check for missed tiles (tiles that passed the bottom without being clicked)
-	for tile in tiles:
-		if tile.position.y >= 700 - TILE_HEIGHT and not tile.is_clicked:
-			end_game()
-			return
-	
-	# Spawn new tiles only when there are no unclicked tiles
-	var has_unclicked_tiles = false
-	for tile in tiles:
-		if not tile.is_clicked:
-			has_unclicked_tiles = true
-			break
-	
-	if not has_unclicked_tiles:
-		spawn_timer += delta
-		if spawn_timer >= spawn_interval:
-			spawn_tile()
-			spawn_timer = 0.0
 
 func start_game():
 	game_running = true
 	game_over = false
 	score = 0
-	speed = INITIAL_SPEED
-	spawn_interval = 0.6
 	score_label.text = "Score: 0"
 	start_label.visible = false
 	game_over_label.visible = false
@@ -96,19 +61,20 @@ func start_game():
 		tile.queue_free()
 	tiles.clear()
 	
-	# Spawn first tile
-	spawn_tile()
+	# Spawn initial tiles
+	for i in range(VISIBLE_TILES):
+		spawn_tile(i)
 
 func reset_game():
 	game_over = false
 	start_game()
 
-func spawn_tile():
+func spawn_tile(index = 0):
 	var column = randi() % COLUMN_COUNT
 	var tile = tile_scene.instantiate()
 	
 	tile.column = column
-	tile.position = Vector2(column * TILE_WIDTH, -TILE_HEIGHT)
+	tile.position = Vector2(column * TILE_WIDTH, 100 + index * TILE_HEIGHT)
 	tile.size = Vector2(TILE_WIDTH, TILE_HEIGHT)
 	
 	game_area.add_child(tile)
@@ -118,49 +84,33 @@ func _on_column_pressed(column):
 	if not game_running or game_over:
 		return
 	
-	# Find the bottom-most tile in this column that hasn't been clicked
-	var target_tile = null
-	var lowest_y = -INF
+	# Find the bottom-most tile (highest Y value, closest to player)
+	var bottom_tile = null
+	var highest_y = -INF
 	
 	for tile in tiles:
-		if tile.column == column and not tile.is_clicked:
-			if tile.position.y > lowest_y:
-				lowest_y = tile.position.y
-				target_tile = tile
+		if tile.position.y > highest_y:
+			highest_y = tile.position.y
+			bottom_tile = tile
 	
-	if target_tile:
-		_on_tile_pressed(target_tile)
+	# Check if the pressed column matches the bottom tile's column
+	if bottom_tile.column == column:
+		# Correct! Remove bottom tile, slide all tiles down, spawn new one at top
+		bottom_tile.queue_free()
+		tiles.erase(bottom_tile)
+		
+		# Slide all remaining tiles down by one tile height
+		for tile in tiles:
+			tile.position.y += TILE_HEIGHT
+		
+		# Spawn new tile at the top
+		spawn_tile(0)
+		
+		score += 1
+		score_label.text = "Score: " + str(score)
 	else:
-		# Missed - no tile in this column or already clicked
+		# Wrong column - game over
 		end_game()
-
-func _on_tile_pressed(tile):
-	if not game_running or game_over:
-		return
-	
-	if tile.is_clicked:
-		return
-	
-	tile.is_clicked = true
-	tile.color = Color(0.5, 0.5, 0.5, 1)  # Gray out clicked tile
-	
-	score += 1
-	score_label.text = "Score: " + str(score)
-	
-	# Increase speed every 10 points
-	if score % 10 == 0:
-		speed += SPEED_INCREMENT
-		# Decrease spawn interval slightly
-		spawn_interval = max(0.3, spawn_interval - 0.02)
-	
-	# Remove tile after a short delay
-	var tween = tile.create_tween()
-	tween.tween_property(tile, "modulate:a", 0.0, 0.1)
-	tween.finished.connect(func(): 
-		if tile in tiles:
-			tiles.erase(tile)
-		tile.queue_free()
-	)
 
 func end_game():
 	game_over = true
