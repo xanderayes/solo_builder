@@ -28,6 +28,13 @@ func _input(event):
 				reset_game()
 	
 	if event is InputEventKey and event.pressed:
+		if event.keycode == KEY_SPACE:
+			if game_over:
+				reset_game()
+			elif not game_running:
+				start_game()
+			return
+		
 		if not game_running or game_over:
 			return
 		
