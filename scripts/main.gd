@@ -2,7 +2,7 @@ extends Node2D
 
 const COLUMN_COUNT = 4
 const TILE_WIDTH = 100
-const TILE_HEIGHT = 150
+const TILE_HEIGHT = 120
 const VISIBLE_TILES = 6
 
 @onready var game_area = $GameArea
