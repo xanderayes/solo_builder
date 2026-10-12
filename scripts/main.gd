@@ -68,11 +68,18 @@ func _process(delta):
 			end_game()
 			return
 	
-	# Spawn new tiles
-	spawn_timer += delta
-	if spawn_timer >= spawn_interval:
-		spawn_tile()
-		spawn_timer = 0.0
+	# Spawn new tiles only when there are no unclicked tiles
+	var has_unclicked_tiles = false
+	for tile in tiles:
+		if not tile.is_clicked:
+			has_unclicked_tiles = true
+			break
+	
+	if not has_unclicked_tiles:
+		spawn_timer += delta
+		if spawn_timer >= spawn_interval:
+			spawn_tile()
+			spawn_timer = 0.0
 
 func start_game():
 	game_running = true
@@ -89,10 +96,8 @@ func start_game():
 		tile.queue_free()
 	tiles.clear()
 	
-	# Spawn initial tiles
-	for i in range(4):
-		spawn_tile()
-		await get_tree().process_frame
+	# Spawn first tile
+	spawn_tile()
 
 func reset_game():
 	game_over = false
