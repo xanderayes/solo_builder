@@ -52,3 +52,41 @@ theme_override_font_sizes/font_size = 32
 text = "Click to Start"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="ColumnLabels" type="HBoxContainer" parent="."]
+offset_left = 0.0
+offset_top = 60.0
+offset_right = 400.0
+offset_bottom = 100.0
+
+[node name="LabelF" type="Label" parent="ColumnLabels"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "F"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LabelG" type="Label" parent="ColumnLabels"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "G"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LabelH" type="Label" parent="ColumnLabels"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "H"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LabelJ" type="Label" parent="ColumnLabels"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "J"
+horizontal_alignment = 1
+vertical_alignment = 1

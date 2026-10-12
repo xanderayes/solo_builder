@@ -32,6 +32,24 @@ func _input(event):
 				start_game()
 			elif game_over:
 				reset_game()
+	
+	if event is InputEventKey and event.pressed:
+		if not game_running or game_over:
+			return
+		
+		var column = -1
+		match event.keycode:
+			KEY_F:
+				column = 0
+			KEY_G:
+				column = 1
+			KEY_H:
+				column = 2
+			KEY_J:
+				column = 3
+		
+		if column >= 0:
+			_on_column_pressed(column)
 
 func _process(delta):
 	if not game_running or game_over:
@@ -88,10 +106,28 @@ func spawn_tile():
 	tile.position = Vector2(column * TILE_WIDTH, -TILE_HEIGHT)
 	tile.size = Vector2(TILE_WIDTH, TILE_HEIGHT)
 	
-	tile.tile_pressed.connect(_on_tile_pressed.bind(tile))
-	
 	game_area.add_child(tile)
 	tiles.append(tile)
+
+func _on_column_pressed(column):
+	if not game_running or game_over:
+		return
+	
+	# Find the bottom-most tile in this column that hasn't been clicked
+	var target_tile = null
+	var lowest_y = -INF
+	
+	for tile in tiles:
+		if tile.column == column and not tile.is_clicked:
+			if tile.position.y > lowest_y:
+				lowest_y = tile.position.y
+				target_tile = tile
+	
+	if target_tile:
+		_on_tile_pressed(target_tile)
+	else:
+		# Missed - no tile in this column or already clicked
+		end_game()
 
 func _on_tile_pressed(tile):
 	if not game_running or game_over:
