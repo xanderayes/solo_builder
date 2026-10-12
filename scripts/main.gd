@@ -104,6 +104,29 @@ func spawn_tile(index = 0):
 	style.border_color = Color(0, 0, 0, 1)
 	tile.add_theme_stylebox_override("panel", style)
 	
+	# Add label with the key letter
+	var label = Label.new()
+	label.text = ""
+	match column:
+		0:
+			label.text = "F"
+		1:
+			label.text = "G"
+		2:
+			label.text = "H"
+		3:
+			label.text = "J"
+	label.anchors_preset = Control.PRESET_FULL_RECT
+	label.offset_left = 0
+	label.offset_top = 0
+	label.offset_right = 0
+	label.offset_bottom = 0
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.modulate = Color(1, 1, 1, 1)
+	label.add_theme_font_size_override("font_size", 60)
+	tile.add_child(label)
+	
 	game_area.add_child(tile)
 	tiles.append(tile)
 
@@ -165,6 +188,29 @@ func _on_column_pressed(column):
 		style.border_width_bottom = 3
 		style.border_color = Color(0, 0, 0, 1)
 		new_tile.add_theme_stylebox_override("panel", style)
+		
+		# Add label with the key letter
+		var label = Label.new()
+		label.text = ""
+		match new_column:
+			0:
+				label.text = "F"
+			1:
+				label.text = "G"
+			2:
+				label.text = "H"
+			3:
+				label.text = "J"
+		label.anchors_preset = Control.PRESET_FULL_RECT
+		label.offset_left = 0
+		label.offset_top = 0
+		label.offset_right = 0
+		label.offset_bottom = 0
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		label.modulate = Color(1, 1, 1, 1)
+		label.add_theme_font_size_override("font_size", 60)
+		new_tile.add_child(label)
 		
 		game_area.add_child(new_tile)
 		tiles.push_front(new_tile)
