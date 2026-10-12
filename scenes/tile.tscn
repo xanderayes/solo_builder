@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://bqn0mkisu2aba"]
+
+[ext_resource type="Script" path="res://scripts/tile.gd" id="1_abc123"]
+
+[node name="Tile" type="ColorRect"]
+offset_right = 100.0
+offset_bottom = 150.0
+color = Color(0, 0, 0, 1)
+script = ExtResource("1_abc123")
