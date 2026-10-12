@@ -1,7 +1,5 @@
 extends Node2D
 
-@export var tile_scene: PackedScene
-
 const COLUMN_COUNT = 4
 const TILE_WIDTH = 100
 const TILE_HEIGHT = 150
@@ -71,12 +69,36 @@ func reset_game():
 
 func spawn_tile(index = 0):
 	var column = randi() % COLUMN_COUNT
-	var tile = tile_scene.instantiate()
 	
-	tile.column = column
+	# Create tile programmatically
+	var tile = ColorRect.new()
+	tile.set_meta("column", column)
 	tile.position = Vector2(column * TILE_WIDTH, 100 + index * TILE_HEIGHT)
 	tile.size = Vector2(TILE_WIDTH, TILE_HEIGHT)
+	tile.color = Color(0, 0, 0, 1)
 	
+	# Create label
+	var label = Label.new()
+	label.name = "KeyLabel"
+	label.text = ""
+	match column:
+		0:
+			label.text = "F"
+		1:
+			label.text = "G"
+		2:
+			label.text = "H"
+		3:
+			label.text = "J"
+	label.anchors_preset = Control.PRESET_CENTER
+	label.offset_left = -25
+	label.offset_top = -25
+	label.offset_right = 25
+	label.offset_bottom = 25
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	
+	tile.add_child(label)
 	game_area.add_child(tile)
 	tiles.append(tile)
 
@@ -84,33 +106,65 @@ func _on_column_pressed(column):
 	if not game_running or game_over:
 		return
 	
-	# Find the top-most tile (lowest Y value, furthest from player)
-	var top_tile = null
-	var lowest_y = INF
+	# Sort tiles by Y position to ensure correct order
+	tiles.sort_custom(func(a, b): return a.position.y < b.position.y)
 	
-	for tile in tiles:
-		if tile.position.y < lowest_y:
-			lowest_y = tile.position.y
-			top_tile = tile
+	# Find the bottom-most tile (highest Y value, closest to player)
+	var bottom_tile = tiles[tiles.size() - 1]
 	
-	print("Pressed column: ", column, ", Top tile column: ", top_tile.column, ", Top tile position: ", top_tile.position)
+	print("=== Pressed key: ", column, " ===")
+	print("Bottom tile: col=", bottom_tile.get_meta("column"), ", pos=", bottom_tile.position)
 	
-	# Check if the pressed column matches the top tile's column
-	if top_tile.column == column:
-		# Correct! Remove top tile, slide all tiles down, spawn new one at top
-		top_tile.queue_free()
-		tiles.erase(top_tile)
+	# Check if the pressed column matches the bottom tile's column
+	if bottom_tile.get_meta("column") == column:
+		print("CORRECT!")
+		# Correct! Remove bottom tile, slide all tiles down, spawn new one at top
+		bottom_tile.queue_free()
+		tiles.pop_back()
 		
 		# Slide all remaining tiles down by one tile height
 		for tile in tiles:
 			tile.position.y += TILE_HEIGHT
 		
-		# Spawn new tile at the top
-		spawn_tile(0)
+		# Spawn new tile at the top (above the current top tile)
+		var new_column = randi() % COLUMN_COUNT
+		
+		# Create tile programmatically
+		var new_tile = ColorRect.new()
+		new_tile.set_meta("column", new_column)
+		new_tile.position = Vector2(new_column * TILE_WIDTH, tiles[0].position.y - TILE_HEIGHT)
+		new_tile.size = Vector2(TILE_WIDTH, TILE_HEIGHT)
+		new_tile.color = Color(0, 0, 0, 1)
+		
+		# Create label
+		var label = Label.new()
+		label.name = "KeyLabel"
+		label.text = ""
+		match new_column:
+			0:
+				label.text = "F"
+			1:
+				label.text = "G"
+			2:
+				label.text = "H"
+			3:
+				label.text = "J"
+		label.anchors_preset = Control.PRESET_CENTER
+		label.offset_left = -25
+		label.offset_top = -25
+		label.offset_right = 25
+		label.offset_bottom = 25
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		
+		new_tile.add_child(label)
+		game_area.add_child(new_tile)
+		tiles.push_front(new_tile)
 		
 		score += 1
 		score_label.text = "Score: " + str(score)
 	else:
+		print("WRONG! Game over.")
 		# Wrong column - game over
 		end_game()
 
