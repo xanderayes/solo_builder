@@ -74,21 +74,28 @@ func spawn_tile(index = 0):
 	var column = randi() % COLUMN_COUNT
 	
 	# Create tile programmatically
-	var tile = ColorRect.new()
+	var tile = Panel.new()
 	tile.set_meta("column", column)
 	tile.position = Vector2(column * TILE_WIDTH, 150 + index * TILE_HEIGHT)
 	tile.size = Vector2(TILE_WIDTH, TILE_HEIGHT)
 	
-	# Use different colors for each column
+	# Create stylebox for the tile with border
+	var style = StyleBoxFlat.new()
 	match column:
 		0:
-			tile.color = Color(1, 0, 0, 1)  # Red for F
+			style.bg_color = Color(1, 0, 0, 1)  # Red for F
 		1:
-			tile.color = Color(0, 1, 0, 1)  # Green for G
+			style.bg_color = Color(0, 1, 0, 1)  # Green for G
 		2:
-			tile.color = Color(0, 0, 1, 1)  # Blue for H
+			style.bg_color = Color(0, 0, 1, 1)  # Blue for H
 		3:
-			tile.color = Color(1, 1, 0, 1)  # Yellow for J
+			style.bg_color = Color(1, 1, 0, 1)  # Yellow for J
+	style.border_width_left = 3
+	style.border_width_right = 3
+	style.border_width_top = 3
+	style.border_width_bottom = 3
+	style.border_color = Color(0, 0, 0, 1)
+	tile.add_theme_stylebox_override("panel", style)
 	
 	game_area.add_child(tile)
 	tiles.append(tile)
@@ -129,21 +136,28 @@ func _on_column_pressed(column):
 		var new_column = randi() % COLUMN_COUNT
 		
 		# Create tile programmatically
-		var new_tile = ColorRect.new()
+		var new_tile = Panel.new()
 		new_tile.set_meta("column", new_column)
 		new_tile.position = Vector2(new_column * TILE_WIDTH, tiles[0].position.y - TILE_HEIGHT)
 		new_tile.size = Vector2(TILE_WIDTH, TILE_HEIGHT)
 		
-		# Use different colors for each column
+		# Create stylebox for the tile with border
+		var style = StyleBoxFlat.new()
 		match new_column:
 			0:
-				new_tile.color = Color(1, 0, 0, 1)  # Red for F
+				style.bg_color = Color(1, 0, 0, 1)  # Red for F
 			1:
-				new_tile.color = Color(0, 1, 0, 1)  # Green for G
+				style.bg_color = Color(0, 1, 0, 1)  # Green for G
 			2:
-				new_tile.color = Color(0, 0, 1, 1)  # Blue for H
+				style.bg_color = Color(0, 0, 1, 1)  # Blue for H
 			3:
-				new_tile.color = Color(1, 1, 0, 1)  # Yellow for J
+				style.bg_color = Color(1, 1, 0, 1)  # Yellow for J
+		style.border_width_left = 3
+		style.border_width_right = 3
+		style.border_width_top = 3
+		style.border_width_bottom = 3
+		style.border_color = Color(0, 0, 0, 1)
+		new_tile.add_theme_stylebox_override("panel", style)
 		
 		game_area.add_child(new_tile)
 		tiles.push_front(new_tile)
